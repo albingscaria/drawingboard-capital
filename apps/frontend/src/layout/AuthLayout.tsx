@@ -16,7 +16,7 @@ export default function AuthLayout({ children, imageUrl }: AuthLayoutProps) {
     <div className="min-h-screen min-w-screen flex flex-row">
       <div className="w-1/2 bg-blue-12 flex relative text-white flex-col items-center justify-center">
         <img
-          src={'src/assets/WhiteLogoNoWordmark.svg'}
+          src={'https://ypslbjbumuxmfrcpeicl.supabase.co/storage/v1/object/public/brand-assets/Main%20Light.png'}
           alt={'DrawingBoard Logo'}
           className="h-16 aspect-auto absolute top-12 left-12"
           aria-hidden
