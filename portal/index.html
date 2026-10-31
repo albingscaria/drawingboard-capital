@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Portal · DrawingBoard Capital Gulf</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;600;700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --navy:#0A1A2F;--blueprint:#12304F;--yellow:#F2C230;--gold:#B98200;--white:#F5F7FA;--paper:#FFFFFF;
+  --graphite:#1C2430;--steel:#5B6B7F;--mist:#C9D4E2;--haze:#8FA3BC;--line:#D5DCE5;--line-navy:#2A4363;
+  --ok:#1F7A4D;--ok-bg:#E6F3EC;--warn:#8A5A00;--warn-bg:#FFF4D6;--err:#A3292A;--err-bg:#FBEAEA;--info:#12304F;--info-bg:#E7EEF7;
+  --display:"Funnel Display","Instrument Sans",system-ui,sans-serif;--sans:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--white);color:var(--graphite);font:400 15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);font-weight:600;color:var(--navy);margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(26px,3.4vw,36px);line-height:1.1}
+h2{font-size:20px}
+h3{font-size:16px}
+p{margin:0}
+.lbl{font:500 12px/1.4 var(--mono);color:var(--steel);letter-spacing:.04em}
+.lbl::before{content:"// ";color:var(--gold)}
+.muted{color:var(--steel)}
+.small{font-size:13px}
+.mono{font-family:var(--mono)}
+[hidden]{display:none!important}
+
+/* top bar */
+.top{background:var(--navy);color:#fff;border-bottom:1px solid var(--line-navy);
+  background-image:linear-gradient(rgba(143,163,188,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(143,163,188,.10) 1px,transparent 1px);background-size:24px 24px}
+.top__in{max-width:1240px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font:700 15px/1 var(--display);letter-spacing:.04em;text-decoration:none;color:#fff;white-space:nowrap}
+.brand b{font-weight:700}.brand span{font-weight:400}
+.brand i{display:inline-block;width:14px;height:3px;background:var(--yellow);margin-left:6px;vertical-align:middle}
+.top__tag{font:500 11px/1 var(--mono);color:var(--haze);border:1px solid var(--line-navy);padding:5px 8px;letter-spacing:.06em}
+.top__sp{flex:1}
+.top__user{font-size:13px;color:var(--mist);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.top__user a,.top__user button{color:#fff;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-navy)}
+.top__user a:hover,.top__user button:hover{text-decoration-color:var(--yellow)}
+
+/* tabs */
+.tabs{max-width:1240px;margin:0 auto;padding:0 20px;display:flex;gap:4px;overflow-x:auto}
+.tab{background:none;border:0;color:var(--mist);padding:12px 14px;cursor:pointer;font-weight:500;border-bottom:2px solid transparent;white-space:nowrap}
+.tab:hover{color:#fff}
+.tab[aria-selected="true"]{color:#fff;border-bottom-color:var(--yellow)}
+.tab .ct{font:500 11px var(--mono);background:var(--yellow);color:var(--navy);padding:1px 6px;margin-left:6px;border-radius:2px}
+
+main{max-width:1240px;margin:0 auto;padding:32px 20px 80px}
+.head{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:24px}
+.head .lbl{margin-bottom:8px}
+
+/* buttons & inputs */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--navy);background:var(--paper);color:var(--navy);padding:9px 16px;font-weight:600;cursor:pointer;text-decoration:none;font-size:14px;line-height:1.2}
+.btn:hover{background:var(--white)}
+.btn--p{background:var(--yellow);border-color:var(--yellow);color:var(--navy)}
+.btn--p:hover{background:#E5B421}
+.btn--n{background:var(--navy);color:#fff}
+.btn--n:hover{background:var(--blueprint)}
+.btn--g{border-color:transparent;background:none;padding-left:6px;padding-right:6px;text-decoration:underline;text-underline-offset:3px}
+.btn--d{border-color:var(--err);color:var(--err)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn--sm{padding:6px 10px;font-size:13px}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld>span{font-size:13px;font-weight:600;color:var(--graphite)}
+.in,select.in,textarea.in{width:100%;border:1px solid var(--line);background:var(--paper);padding:9px 11px;border-radius:0;min-width:0}
+.in:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 1px var(--navy)}
+textarea.in{min-height:96px;resize:vertical}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.span2{grid-column:span 2}
+@media (max-width:720px){.grid2,.grid3{grid-template-columns:1fr}.span2{grid-column:auto}}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.err{color:var(--err);font-size:13px}
+
+/* cards */
+.card{background:var(--paper);border:1px solid var(--line);padding:22px}
+.card+.card{margin-top:16px}
+.card h2{margin-bottom:12px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid var(--line);background:var(--paper);margin-bottom:24px}
+.stat{padding:20px 22px;border-right:1px solid var(--line);cursor:pointer;text-align:left;background:none;border-top:0;border-bottom:0;border-left:0}
+.stat:last-child{border-right:0}
+.stat:hover{background:var(--white)}
+.stat b{display:block;font:600 34px/1 var(--display);color:var(--navy);margin:8px 0 4px}
+.stat b::before{content:"";display:block;width:18px;height:3px;background:var(--yellow);margin-bottom:12px}
+@media (max-width:720px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+
+/* tables */
+.tbl-wrap{background:var(--paper);border:1px solid var(--line);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font:500 11px/1.3 var(--mono);color:var(--steel);letter-spacing:.06em;text-transform:uppercase;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--white);white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover td{background:#FAFBFD}
+td .sub{display:block;color:var(--steel);font-size:13px}
+.empty{padding:40px 20px;text-align:center;color:var(--steel)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.filters .in{width:auto;min-width:160px}
+.filters input.in{flex:1;min-width:200px}
+
+/* pills */
+.pill{display:inline-block;font:500 11px/1 var(--mono);letter-spacing:.05em;text-transform:uppercase;padding:5px 7px;border:1px solid currentColor;white-space:nowrap}
+.p-new,.p-submitted,.p-onboarding,.p-pending{color:var(--warn);background:var(--warn-bg)}
+.p-contacted,.p-under_review,.p-in_progress,.p-in_market{color:var(--info);background:var(--info-bg)}
+.p-qualified,.p-accepted,.p-converted,.p-delivered,.p-client,.p-partner,.p-admin{color:var(--ok);background:var(--ok-bg)}
+.p-closed{color:var(--steel);background:var(--white)}
+.p-spam,.p-declined{color:var(--err);background:var(--err-bg)}
+.kind{font:500 12px var(--mono);color:var(--blueprint)}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(10,26,47,.45);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(760px,100%);background:var(--white);z-index:21;overflow-y:auto;box-shadow:-12px 0 40px rgba(10,26,47,.18);display:flex;flex-direction:column}
+.drawer__h{background:var(--navy);color:#fff;padding:20px 24px;display:flex;gap:12px;align-items:flex-start;position:sticky;top:0;z-index:2}
+.drawer__h h2{color:#fff}
+.drawer__h .lbl{color:var(--haze)}
+.drawer__x{margin-left:auto;background:none;border:1px solid var(--line-navy);color:#fff;width:34px;height:34px;cursor:pointer;font-size:18px;flex:none}
+.drawer__b{padding:24px;display:flex;flex-direction:column;gap:16px}
+.kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 16px;font-size:14px}
+.kv dt{color:var(--steel)}
+.kv dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+@media (max-width:560px){.kv{grid-template-columns:1fr}.kv dd{margin-bottom:8px}}
+
+/* messages */
+.thread{display:flex;flex-direction:column;gap:10px;max-height:360px;overflow-y:auto;padding:4px 0}
+.msg{background:var(--white);border:1px solid var(--line);padding:10px 12px;max-width:88%}
+.msg.me{align-self:flex-end;background:var(--info-bg);border-color:#C9D7EA}
+.msg .meta{font:500 11px var(--mono);color:var(--steel);margin-bottom:4px}
+.msg p{white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* files */
+.files{display:flex;flex-direction:column}
+.file{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.file:last-child{border-bottom:0}
+.file .nm{flex:1;min-width:0;overflow-wrap:anywhere}
+.drop{border:1px dashed var(--haze);padding:18px;text-align:center;color:var(--steel);font-size:14px;cursor:pointer;background:var(--white)}
+.drop.over{border-color:var(--navy);background:var(--info-bg)}
+
+/* results */
+.range{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}
+.range b{font:600 clamp(28px,4vw,40px)/1 var(--display);color:var(--navy)}
+.steps{display:flex;gap:0;margin:6px 0 4px;border:1px solid var(--line);background:var(--paper)}
+.steps div{flex:1;padding:10px 12px;font-size:13px;color:var(--steel);border-right:1px solid var(--line);position:relative}
+.steps div:last-child{border-right:0}
+.steps div.on{color:var(--navy);font-weight:600}
+.steps div.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--yellow)}
+.steps div.done{color:var(--navy)}
+@media (max-width:560px){.steps{flex-direction:column}.steps div{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* sign in */
+.auth{min-height:calc(100vh - 60px);display:grid;place-items:center;padding:40px 20px;
+  background:var(--navy);background-image:linear-gradient(rgba(143,163,188,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(143,163,188,.10) 1px,transparent 1px);background-size:24px 24px}
+.auth__box{background:var(--paper);width:min(440px,100%);padding:36px 32px;border-top:3px solid var(--yellow)}
+.auth__box h1{margin:10px 0 8px}
+.auth__box form{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.note{background:var(--white);border:1px solid var(--line);padding:12px 14px;font-size:14px}
+.note--ok{background:var(--ok-bg);border-color:#BFE0CD}
+.note--warn{background:var(--warn-bg);border-color:#F0D98F}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;z-index:40;font-size:14px;border-left:3px solid var(--yellow);max-width:calc(100% - 32px)}
+.linkbox{display:flex;gap:8px}
+.linkbox input{font:12px var(--mono)}
+.loading{padding:60px 20px;text-align:center;color:var(--steel);font:500 13px var(--mono)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top__in">
+    <a class="brand" href="/"><b>DRAWINGBOARD</b> <span>CAPITAL</span> <b>GULF</b><i></i></a>
+    <span class="top__tag" id="role-tag" hidden></span>
+    <span class="top__sp"></span>
+    <div class="top__user" id="top-user" hidden>
+      <span id="top-email"></span>
+      <button type="button" data-go="account">Account</button>
+      <button type="button" id="signout">Sign out</button>
+    </div>
+    <div class="top__user" id="top-site"><a href="/">Back to website</a></div>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist" hidden></nav>
+</header>
+
+<div id="app"><div class="loading">Loading…</div></div>
+
+<script>
+(function(){
+'use strict';
+var SB_URL='https://mlkwkupwrvxotfncmpcj.supabase.co';
+var SB_KEY='sb_publishable_hEvo3-fO8afnb20tPdQpqg_97ZS33SO';
+var sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+var REDIRECT=location.origin+'/portal/';
+
+/* ---------- helpers ---------- */
+var app=document.getElementById('app');
+function esc(s){return s==null?'':String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function $(sel,root){return (root||document).querySelector(sel)}
+function $$(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel))}
+function fmtDate(d){if(!d)return '';var x=new Date(d);return x.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}
+function fmtTime(d){if(!d)return '';var x=new Date(d);return x.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+x.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
+function money(n,cur){if(n==null||n==='')return '—';n=Number(n);var s=n>=1e9?(n/1e9).toFixed(n%1e9?1:0)+'B':n>=1e6?(n/1e6).toFixed(n%1e6?1:0)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':String(n);return (cur||'USD')+' '+s}
+function bytes(n){if(!n)return '';return n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB'}
+function label(s){return s==null?'':String(s).replace(/[_-]/g,' ').replace(/^\w/,function(c){return c.toUpperCase()})}
+function pill(s){return '<span class="pill p-'+esc(s)+'">'+esc(label(s))+'</span>'}
+function toast(msg){var t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.remove()},3200)}
+function fail(e){console.error(e);toast((e&&e.message)?e.message:'Something went wrong. Please try again.')}
+function opts(list,cur){return list.map(function(v){var val=Array.isArray(v)?v[0]:v,lab=Array.isArray(v)?v[1]:label(v);return '<option value="'+esc(val)+'"'+(val===cur?' selected':'')+'>'+esc(lab)+'</option>'}).join('')}
+
+var LEAD_STATUS=['new','contacted','qualified','converted','closed','spam'];
+var ENG_STATUS=['onboarding','in_progress','delivered','closed'];
+var ENG_KINDS=[['find_buyers','Find Buyers'],['market_comps','Market Comps'],['blueprint','Blueprint AI'],['sell_side','Sell-side M&A'],['buy_side','Buy-side M&A'],['readiness','Investor readiness'],['advisory','Strategic advisory']];
+var MAN_STATUS=['submitted','under_review','accepted','in_market','closed','declined'];
+var LEAD_KINDS={'mandate':'Mandate inquiry','find-buyers':'Find Buyers','valuation':'Market Comps','blueprint':'Blueprint AI','investor':'Investor access','contact':'Contact','readiness':'Readiness','intermediary':'Intermediary'};
+var LEAD_TO_ENG={'find-buyers':'find_buyers','valuation':'market_comps','blueprint':'blueprint','mandate':'sell_side','readiness':'readiness'};
+function engKind(k){for(var i=0;i<ENG_KINDS.length;i++)if(ENG_KINDS[i][0]===k)return ENG_KINDS[i][1];return label(k)}
+
+/* ---------- state ---------- */
+var S={session:null,me:null,view:null};
+
+async function q(p){var r=await p;if(r.error)throw r.error;return r.data}
+
+/* ---------- auth ---------- */
+function renderAuth(msg){
+  $('#tabs').hidden=true;$('#top-user').hidden=true;$('#role-tag').hidden=true;$('#top-site').hidden=false;
+  var hashErr='';
+  if(/error_description=/.test(location.hash)){var m=decodeURIComponent((location.hash.match(/error_description=([^&]+)/)||[])[1]||'').replace(/\+/g,' ');hashErr=m||'That sign-in link has expired.';history.replaceState(null,'',location.pathname)}
+  app.innerHTML='<section class="auth"><div class="auth__box">'+
+    '<p class="lbl">client &amp; partner portal</p><h1>Sign in</h1>'+
+    '<p class="muted">For clients and partner firms working with DrawingBoard Capital. Enter your email and we will send you a secure sign-in link.</p>'+
+    (hashErr?'<p class="note note--warn" style="margin-top:16px">'+esc(hashErr)+' Request a new link below.</p>':'')+
+    (msg?'<p class="note note--ok" style="margin-top:16px">'+esc(msg)+'</p>':'')+
+    '<form id="f-link" novalidate><label class="fld"><span>Work email</span><input class="in" type="email" name="email" autocomplete="email" required></label>'+
+    '<button class="btn btn--p" type="submit">Email me a sign-in link →</button><p class="err" id="a-err" hidden></p></form>'+
+    '<details style="margin-top:18px"><summary class="small muted" style="cursor:pointer">Sign in with a password instead</summary>'+
+    '<form id="f-pw" novalidate><label class="fld"><span>Email</span><input class="in" type="email" name="email" autocomplete="username" required></label>'+
+    '<label class="fld"><span>Password</span><input class="in" type="password" name="pw" autocomplete="current-password" required></label>'+
+    '<button class="btn btn--n" type="submit">Sign in</button><p class="err" id="p-err" hidden></p></form>'+
+    '<p class="small muted" style="margin-top:10px">You can set a password from Account after your first sign-in.</p></details>'+
+    '<p class="small muted" style="margin-top:22px">No access yet? <a href="/#mandate">Contact us</a> and a partner will set you up.</p>'+
+    '</div></section>';
+  $('#f-link').addEventListener('submit',async function(e){
+    e.preventDefault();var em=this.email.value.trim(),er=$('#a-err');
+    if(!/^\S+@\S+\.\S+$/.test(em)){er.textContent='Enter a valid email address.';er.hidden=false;return}
+    var b=this.querySelector('button');b.disabled=true;er.hidden=true;
+    var r=await sb.auth.signInWithOtp({email:em,options:{emailRedirectTo:REDIRECT,shouldCreateUser:true}});
+    b.disabled=false;
+    if(r.error){er.textContent=r.error.message;er.hidden=false;return}
+    renderAuth('Check '+em+' for your sign-in link. It works once and expires in an hour.');
+  });
+  $('#f-pw').addEventListener('submit',async function(e){
+    e.preventDefault();var er=$('#p-err');er.hidden=true;
+    var r=await sb.auth.signInWithPassword({email:this.email.value.trim(),password:this.pw.value});
+    if(r.error){er.textContent=r.error.message==='Invalid login credentials'?'That email and password don’t match.':r.error.message;er.hidden=false}
+  });
+}
+
+async function loadMe(){
+  var u=S.session.user;
+  var p=await sb.from('profiles').select('*').eq('id',u.id).maybeSingle();
+  if(p.error)throw p.error;
+  S.me=p.data||{id:u.id,email:u.email,role:'pending'};
+}
+
+/* ---------- shell ---------- */
+var TABS={
+  admin:[['overview','Overview'],['leads','Leads'],['engagements','Engagements'],['mandates','Mandates'],['people','People']],
+  client:[['engagements','My engagements']],
+  partner:[['mandates','My mandates'],['new-mandate','Submit a mandate']],
+  pending:[]
+};
+var counts={};
+function renderShell(){
+  $('#top-site').hidden=true;$('#top-user').hidden=false;
+  $('#top-email').textContent=S.me.full_name||S.me.email;
+  var tag=$('#role-tag');tag.hidden=false;tag.textContent=S.me.role.toUpperCase();
+  var tabs=TABS[S.me.role]||[],nav=$('#tabs');
+  nav.hidden=!tabs.length;
+  nav.innerHTML=tabs.map(function(t){return '<button class="tab" role="tab" data-go="'+t[0]+'" aria-selected="'+(S.view===t[0])+'">'+esc(t[1])+(counts[t[0]]?'<span class="ct">'+counts[t[0]]+'</span>':'')+'</button>'}).join('');
+}
+document.addEventListener('click',function(e){var g=e.target.closest('[data-go]');if(!g)return;e.preventDefault();go(g.dataset.go)});
+$('#signout').addEventListener('click',async function(){await sb.auth.signOut();S.me=null;renderAuth()});
+
+function go(v){
+  S.view=v;closeDrawer();
+  try{history.replaceState(null,'','#'+v)}catch(_){}
+  renderShell();
+  app.innerHTML='<main><div class="loading">Loading…</div></main>';
+  var r=S.me.role,fn;
+  if(v==='account')fn=viewAccount;
+  else if(r==='admin')fn={overview:aOverview,leads:aLeads,engagements:aEngagements,mandates:aMandates,people:aPeople}[v]||aOverview;
+  else if(r==='client')fn=cEngagements;
+  else if(r==='partner')fn=v==='new-mandate'?pNewMandate:pMandates;
+  else fn=viewPending;
+  Promise.resolve(fn()).catch(function(e){fail(e);app.innerHTML='<main><div class="empty">Couldn’t load this page. '+esc(e.message||'')+'</div></main>'});
+}
+function main(html){app.innerHTML='<main>'+html+'</main>';return app.firstChild}
+function head(lbl,title,sub,actions){return '<div class="head"><div><p class="lbl">'+esc(lbl)+'</p><h1>'+esc(title)+'</h1>'+(sub?'<p class="muted" style="margin-top:8px;max-width:640px">'+esc(sub)+'</p>':'')+'</div>'+(actions||'')+'</div>'}
+
+/* ---------- drawer ---------- */
+var drawerEl=null;
+function openDrawer(lbl,title,body,extraHead){
+  closeDrawer();
+  var s=document.createElement('div');s.className='scrim';s.addEventListener('click',closeDrawer);
+  var d=document.createElement('aside');d.className='drawer';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-label',title);
+  d.innerHTML='<div class="drawer__h"><div style="min-width:0"><p class="lbl">'+esc(lbl)+'</p><h2>'+esc(title)+'</h2>'+(extraHead||'')+'</div><button class="drawer__x" type="button" aria-label="Close">×</button></div><div class="drawer__b">'+body+'</div>';
+  d.querySelector('.drawer__x').addEventListener('click',closeDrawer);
+  document.body.appendChild(s);document.body.appendChild(d);drawerEl={s:s,d:d};
+  d.querySelector('.drawer__x').focus();
+  return d;
+}
+function closeDrawer(){if(drawerEl){drawerEl.s.remove();drawerEl.d.remove();drawerEl=null}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer()});
+
+/* ---------- shared: files & messages ---------- */
+function filesBlock(scope,id,opts2){
+  opts2=opts2||{};
+  return '<section class="card" data-files="'+scope+':'+id+'"><h2>'+(opts2.title||'Documents')+'</h2>'+
+    '<div class="files" data-list><p class="muted small">Loading…</p></div>'+
+    '<label class="drop" style="display:block;margin-top:14px" data-drop><input type="file" multiple hidden>'+
+    (opts2.deliverable?'Upload a deliverable for the client (drop files or click)':'Drop files here or click to upload · up to 50 MB each')+'</label></section>';
+}
+async function mountFiles(root,scope,id,deliverable){
+  var box=root.querySelector('[data-files="'+scope+':'+id+'"]');if(!box)return;
+  var list=box.querySelector('[data-list]'),drop=box.querySelector('[data-drop]'),inp=drop.querySelector('input');
+  var col=scope==='e'?'engagement_id':'mandate_id';
+  async function refresh(){
+    var rows=await q(sb.from('files').select('*').eq(col,id).order('created_at',{ascending:false}));
+    list.innerHTML=rows.length?rows.map(function(f){return '<div class="file"><span class="nm">'+esc(f.name)+(f.is_deliverable?' <span class="pill p-delivered">Deliverable</span>':'')+'<span class="sub small muted">'+fmtTime(f.created_at)+' · '+bytes(f.size)+'</span></span>'+
+      '<button class="btn btn--sm" type="button" data-dl="'+esc(f.path)+'">Download</button>'+
+      ((f.uploaded_by===S.me.id||S.me.role==='admin')?'<button class="btn btn--sm btn--g" type="button" data-rm="'+esc(f.id)+'" data-path="'+esc(f.path)+'">Remove</button>':'')+'</div>'}).join(''):'<p class="muted small">No documents yet.</p>';
+  }
+  list.addEventListener('click',async function(e){
+    var dl=e.target.closest('[data-dl]'),rm=e.target.closest('[data-rm]');
+    try{
+      if(dl){var r=await q(sb.storage.from('files').createSignedUrl(dl.dataset.dl,120,{download:true}));location.href=r.signedUrl}
+      if(rm){if(!confirm('Remove this document?'))return;await q(sb.storage.from('files').remove([rm.dataset.path]));await q(sb.from('files').delete().eq('id',rm.dataset.rm));refresh()}
+    }catch(err){fail(err)}
+  });
+  async function upload(fs){
+    for(var i=0;i<fs.length;i++){var f=fs[i];
+      if(f.size>52428800){toast(f.name+' is over 50 MB.');continue}
+      var safe=f.name.replace(/[^\w.\-]+/g,'_').slice(-120),path=scope+'/'+id+'/'+Date.now()+'-'+safe;
+      drop.textContent='Uploading '+f.name+'…';
+      try{
+        await q(sb.storage.from('files').upload(path,f,{contentType:f.type||'application/octet-stream'}));
+        var row={path:path,name:f.name,size:f.size,is_deliverable:!!deliverable};row[col]=id;
+        await q(sb.from('files').insert(row));
+      }catch(err){fail(err)}
+    }
+    drop.innerHTML='';drop.appendChild(inp);drop.appendChild(document.createTextNode(deliverable?'Upload a deliverable for the client (drop files or click)':'Drop files here or click to upload · up to 50 MB each'));
+    inp.value='';refresh();toast('Upload complete.');
+  }
+  inp.addEventListener('change',function(){upload(inp.files)});
+  drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('over')});
+  drop.addEventListener('dragleave',function(){drop.classList.remove('over')});
+  drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('over');upload(e.dataTransfer.files)});
+  refresh().catch(fail);
+}
+function msgBlock(scope,id){
+  return '<section class="card" data-msgs="'+scope+':'+id+'"><h2>Messages</h2><div class="thread" data-thread><p class="muted small">Loading…</p></div>'+
+    '<form data-send style="margin-top:12px;display:flex;flex-direction:column;gap:10px"><textarea class="in" name="body" rows="3" placeholder="Write a message…" required maxlength="5000"></textarea><div><button class="btn btn--n btn--sm" type="submit">Send</button></div></form></section>';
+}
+async function mountMsgs(root,scope,id){
+  var box=root.querySelector('[data-msgs="'+scope+':'+id+'"]');if(!box)return;
+  var th=box.querySelector('[data-thread]'),form=box.querySelector('[data-send]');
+  var col=scope==='e'?'engagement_id':'mandate_id';
+  async function refresh(){
+    var rows=await q(sb.from('messages').select('*').eq(col,id).order('created_at'));
+    th.innerHTML=rows.length?rows.map(function(m){return '<div class="msg'+(m.author_id===S.me.id?' me':'')+'"><p class="meta">'+esc(m.author_name||'')+' · '+fmtTime(m.created_at)+'</p><p>'+esc(m.body)+'</p></div>'}).join(''):'<p class="muted small">No messages yet. Questions and updates for this '+(scope==='e'?'engagement':'mandate')+' go here.</p>';
+    th.scrollTop=th.scrollHeight;
+  }
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();var body=form.body.value.trim();if(!body)return;
+    var b=form.querySelector('button');b.disabled=true;
+    try{var row={body:body,author_name:(S.me.full_name||S.me.email)+(S.me.role==='admin'?' (DrawingBoard)':'')};row[col]=id;await q(sb.from('messages').insert(row));form.reset();await refresh()}catch(err){fail(err)}
+    b.disabled=false;
+  });
+  refresh().catch(fail);
+}
+
+/* ---------- admin: invite link ---------- */
+async function inviteLink(email,role,extra){
+  var body=Object.assign({email:email,redirectTo:REDIRECT},role?{role:role}:{},extra||{});
+  var r=await sb.functions.invoke('admin-invite',{body:body});
+  if(r.error){var msg=r.error.message;try{var j=await r.error.context.json();msg=j.error||msg}catch(_){}throw new Error(msg)}
+  return r.data.link;
+}
+function showLink(link,email,who){
+  var subj='Your DrawingBoard Capital portal access';
+  var body='Hello'+(who?' '+who:'')+',\n\nYou now have access to the DrawingBoard Capital client portal. Use this one-time link to sign in (it expires in 24 hours):\n\n'+link+'\n\nAfter that you can sign in any time at '+REDIRECT+'\n\nBest regards,\nAlbin';
+  var d=openDrawer('sign-in link','Send this link to '+email,
+    '<p class="note note--ok">Access granted. Send this one-time link to '+esc(email)+' from your own email. It signs them straight in and expires after one use.</p>'+
+    '<div class="linkbox"><input class="in" readonly value="'+esc(link)+'" id="lnk"><button class="btn btn--n" type="button" id="cp">Copy</button></div>'+
+    '<div class="row"><a class="btn btn--p" href="mailto:'+esc(email)+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body)+'">Open in my email →</a></div>'+
+    '<p class="small muted">Don’t open the link yourself, or it will sign you in as them and be used up.</p>');
+  d.querySelector('#cp').addEventListener('click',function(){var i=d.querySelector('#lnk');i.select();(navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).then(function(){toast('Link copied.')},function(){document.execCommand('copy');toast('Link copied.')})});
+}
+
+/* ---------- admin views ---------- */
+async function refreshCounts(){
+  if(S.me.role!=='admin')return;
+  var res=await Promise.all([
+    sb.from('leads').select('id',{count:'exact',head:true}).eq('status','new'),
+    sb.from('mandates').select('id',{count:'exact',head:true}).eq('status','submitted'),
+    sb.from('profiles').select('id',{count:'exact',head:true}).eq('role','pending')]);
+  counts={leads:res[0].count||0,mandates:res[1].count||0,people:res[2].count||0};
+  renderShell();
+}
+
+async function aOverview(){
+  var r=await Promise.all([
+    sb.from('leads').select('id',{count:'exact',head:true}).eq('status','new'),
+    sb.from('engagements').select('id',{count:'exact',head:true}).in('status',['onboarding','in_progress']),
+    sb.from('mandates').select('id',{count:'exact',head:true}).in('status',['submitted','under_review']),
+    sb.from('profiles').select('id',{count:'exact',head:true}).eq('role','pending'),
+    sb.from('leads').select('id,created_at,kind,request,name,company,email,status').order('created_at',{ascending:false}).limit(8),
+    sb.from('mandates').select('id,created_at,company,partner_firm,side,status').order('created_at',{ascending:false}).limit(5)]);
+  r.forEach(function(x){if(x.error)throw x.error});
+  var root=main(head('overview','Good to see you'+(S.me.full_name?', '+S.me.full_name.split(' ')[0]:''),'Everything that has come in through the website and the portal.')+
+    '<div class="stats">'+
+    '<button class="stat" data-go="leads"><span class="lbl">new leads</span><b>'+(r[0].count||0)+'</b><span class="small muted">Website requests to review</span></button>'+
+    '<button class="stat" data-go="engagements"><span class="lbl">active engagements</span><b>'+(r[1].count||0)+'</b><span class="small muted">Onboarding or in progress</span></button>'+
+    '<button class="stat" data-go="mandates"><span class="lbl">partner mandates</span><b>'+(r[2].count||0)+'</b><span class="small muted">Submitted or under review</span></button>'+
+    '<button class="stat" data-go="people"><span class="lbl">awaiting access</span><b>'+(r[3].count||0)+'</b><span class="small muted">Signed up, not yet approved</span></button></div>'+
+    '<div class="grid2" style="align-items:start"><section class="card"><div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Latest leads</h2><button class="btn btn--g btn--sm" data-go="leads">All leads →</button></div>'+
+    (r[4].data.length?'<table><tbody>'+r[4].data.map(function(l){return '<tr class="click" data-lead="'+l.id+'"><td>'+esc(l.company||l.name||l.email)+'<span class="sub">'+esc(LEAD_KINDS[l.kind]||l.request||l.kind)+' · '+fmtDate(l.created_at)+'</span></td><td style="text-align:right">'+pill(l.status)+'</td></tr>'}).join('')+'</tbody></table>':'<p class="muted">No leads yet. Requests from the website forms appear here.</p>')+'</section>'+
+    '<section class="card" style="margin-top:0"><div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Latest partner mandates</h2><button class="btn btn--g btn--sm" data-go="mandates">All mandates →</button></div>'+
+    (r[5].data.length?'<table><tbody>'+r[5].data.map(function(m){return '<tr class="click" data-man="'+m.id+'"><td>'+esc(m.company)+'<span class="sub">'+esc(m.partner_firm||'')+' · '+label(m.side)+'-side · '+fmtDate(m.created_at)+'</span></td><td style="text-align:right">'+pill(m.status)+'</td></tr>'}).join('')+'</tbody></table>':'<p class="muted">No mandates yet. Invite a partner firm from People.</p>')+'</section></div>');
+  root.addEventListener('click',function(e){var t=e.target.closest('[data-lead]');if(t)leadDrawer(+t.dataset.lead);var m=e.target.closest('[data-man]');if(m)mandateDrawer(m.dataset.man)});
+  refreshCounts().catch(function(){});
+}
+
+async function aLeads(){
+  var rows=await q(sb.from('leads').select('*').order('created_at',{ascending:false}).limit(500));
+  var root=main(head('leads','Leads','Every request from the website: mandate inquiries, Find Buyers, Market Comps, Blueprint AI and investor access.','<button class="btn" id="csv">Export CSV</button>')+
+    '<div class="filters"><input class="in" type="search" id="lq" placeholder="Search name, company or email" aria-label="Search leads">'+
+    '<select class="in" id="lk" aria-label="Type"><option value="">All types</option>'+Object.keys(LEAD_KINDS).map(function(k){return '<option value="'+k+'">'+LEAD_KINDS[k]+'</option>'}).join('')+'</select>'+
+    '<select class="in" id="ls" aria-label="Status"><option value="">All statuses</option>'+opts(LEAD_STATUS)+'</select></div>'+
+    '<div class="tbl-wrap"><table><thead><tr><th>Received</th><th>Type</th><th>Who</th><th>Detail</th><th>Status</th></tr></thead><tbody id="lt"></tbody></table></div>');
+  function draw(){
+    var qq=$('#lq').value.toLowerCase(),k=$('#lk').value,s=$('#ls').value;
+    var f=rows.filter(function(l){return (!k||l.kind===k)&&(!s||l.status===s)&&(!qq||[l.name,l.company,l.email].join(' ').toLowerCase().indexOf(qq)>=0)});
+    $('#lt').innerHTML=f.length?f.map(function(l){return '<tr class="click" data-lead="'+l.id+'"><td class="mono small">'+fmtTime(l.created_at)+'</td><td><span class="kind">'+esc(LEAD_KINDS[l.kind]||l.kind)+'</span></td><td>'+esc(l.name||'—')+'<span class="sub">'+esc(l.company||'')+(l.company&&l.email?' · ':'')+esc(l.email||'')+'</span></td><td class="small">'+esc((l.detail||l.message||'').slice(0,120))+'</td><td>'+pill(l.status)+'</td></tr>'}).join(''):'<tr><td colspan="5" class="empty">'+(rows.length?'No leads match these filters.':'No leads yet. When someone submits a form on the website, it lands here.')+'</td></tr>';
+  }
+  ['lq','lk','ls'].forEach(function(id){$('#'+id).addEventListener('input',draw)});
+  draw();
+  root.addEventListener('click',function(e){var t=e.target.closest('[data-lead]');if(t)leadDrawer(+t.dataset.lead,function(){aLeads()})});
+  $('#csv').addEventListener('click',function(){
+    var cols=['created_at','kind','status','name','company','email','phone','country','detail','message','notes'];
+    var csv=[cols.join(',')].concat(rows.map(function(r){return cols.map(function(c){return '"'+String(r[c]==null?'':r[c]).replace(/"/g,'""')+'"'}).join(',')})).join('\n');
+    var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='drawingboard-leads-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  });
+}
+
+async function leadDrawer(id,after){
+  var l=await q(sb.from('leads').select('*').eq('id',id).single());
+  var p=l.payload||{},skip={type:1,request:1,name:1,email:1,company:1,phone:1,country:1,detail:1,message:1,at:1,page:1,lang:1};
+  var extra=Object.keys(p).filter(function(k){return !skip[k]&&p[k]!==''&&p[k]!=null}).map(function(k){return '<dt>'+esc(label(k))+'</dt><dd>'+esc(typeof p[k]==='object'?JSON.stringify(p[k]):p[k])+'</dd>'}).join('');
+  var d=openDrawer(LEAD_KINDS[l.kind]||l.kind,l.company||l.name||l.email,
+    '<section class="card"><dl class="kv"><dt>Received</dt><dd>'+fmtTime(l.created_at)+' · '+esc(l.page||'')+(l.lang==='ar'?' · Arabic':'')+'</dd>'+
+    '<dt>Name</dt><dd>'+esc(l.name||'—')+'</dd><dt>Email</dt><dd><a href="mailto:'+esc(l.email)+'">'+esc(l.email)+'</a></dd>'+
+    (l.phone?'<dt>Phone</dt><dd>'+esc(l.phone)+'</dd>':'')+(l.company?'<dt>Company</dt><dd>'+esc(l.company)+'</dd>':'')+(l.country?'<dt>Country</dt><dd>'+esc(l.country)+'</dd>':'')+
+    (l.detail?'<dt>Detail</dt><dd>'+esc(l.detail)+'</dd>':'')+(l.message?'<dt>Message</dt><dd>'+esc(l.message)+'</dd>':'')+extra+'</dl></section>'+
+    '<section class="card"><h2>Follow-up</h2><div class="grid2"><label class="fld"><span>Status</span><select class="in" id="l-st">'+opts(LEAD_STATUS,l.status)+'</select></label><div></div>'+
+    '<label class="fld span2"><span>Internal notes</span><textarea class="in" id="l-nt" placeholder="Only visible to admins">'+esc(l.notes||'')+'</textarea></label></div>'+
+    '<div class="row" style="margin-top:14px"><button class="btn btn--n" id="l-save">Save</button><a class="btn" href="mailto:'+esc(l.email)+'?subject='+encodeURIComponent('Re: your '+(LEAD_KINDS[l.kind]||'')+' request')+'">Reply by email</a></div></section>'+
+    '<section class="card"><h2>Turn into an engagement</h2><p class="muted small" style="margin-bottom:14px">Creates a client engagement, gives '+esc(l.email)+' portal access, and gives you a sign-in link to send them.</p>'+
+    '<div class="grid2"><label class="fld"><span>Company</span><input class="in" id="c-co" value="'+esc(l.company||'')+'"></label>'+
+    '<label class="fld"><span>Type</span><select class="in" id="c-k">'+opts(ENG_KINDS,LEAD_TO_ENG[l.kind]||'advisory')+'</select></label></div>'+
+    '<div class="row" style="margin-top:14px"><button class="btn btn--p" id="c-go">Create engagement and invite →</button></div></section>');
+  d.querySelector('#l-save').addEventListener('click',async function(){try{await q(sb.from('leads').update({status:$('#l-st').value,notes:$('#l-nt').value}).eq('id',id));toast('Saved.');if(after)after();refreshCounts()}catch(e){fail(e)}});
+  d.querySelector('#c-go').addEventListener('click',async function(){
+    var b=this,co=$('#c-co').value.trim();if(!co){toast('Add the company name.');return}
+    b.disabled=true;
+    try{
+      await q(sb.from('engagements').insert({client_email:l.email.toLowerCase(),company:co,kind:$('#c-k').value,lead_id:l.id,summary:l.detail||null}));
+      await q(sb.from('leads').update({status:'converted'}).eq('id',id));
+      var link=await inviteLink(l.email,'client',{full_name:l.name||null,company:co});
+      if(after)after();refreshCounts();showLink(link,l.email,(l.name||'').split(' ')[0]);
+    }catch(e){fail(e);b.disabled=false}
+  });
+}
+
+async function aEngagements(){
+  var rows=await q(sb.from('engagements').select('*, results(published)').order('updated_at',{ascending:false}));
+  var root=main(head('engagements','Engagements','Client work in progress. Publish a value range, buyer list or files and the client sees them in their portal.','<button class="btn btn--p" id="new-e">New engagement</button>')+
+    '<div class="tbl-wrap"><table><thead><tr><th>Company</th><th>Type</th><th>Client</th><th>Results</th><th>Status</th><th>Updated</th></tr></thead><tbody>'+
+    (rows.length?rows.map(function(e){var pub=e.results&&(Array.isArray(e.results)?e.results[0]:e.results);return '<tr class="click" data-eng="'+e.id+'"><td><b>'+esc(e.company)+'</b></td><td><span class="kind">'+esc(engKind(e.kind))+'</span></td><td class="small">'+esc(e.client_email)+'</td><td class="small">'+(pub&&pub.published?'Published':'<span class="muted">Draft</span>')+'</td><td>'+pill(e.status)+'</td><td class="mono small">'+fmtDate(e.updated_at)+'</td></tr>'}).join(''):'<tr><td colspan="6" class="empty">No engagements yet. Open a lead and choose “Create engagement”, or start one here.</td></tr>')+
+    '</tbody></table></div>');
+  root.addEventListener('click',function(e){var t=e.target.closest('[data-eng]');if(t)engDrawer(t.dataset.eng)});
+  $('#new-e').addEventListener('click',function(){
+    var d=openDrawer('new engagement','Start an engagement',
+      '<section class="card"><div class="grid2"><label class="fld"><span>Company *</span><input class="in" id="n-co"></label><label class="fld"><span>Type</span><select class="in" id="n-k">'+opts(ENG_KINDS)+'</select></label>'+
+      '<label class="fld"><span>Client email *</span><input class="in" type="email" id="n-em"></label><label class="fld"><span>Client name</span><input class="in" id="n-nm"></label>'+
+      '<label class="fld span2"><span>Summary</span><textarea class="in" id="n-su" placeholder="Visible to the client"></textarea></label></div>'+
+      '<div class="row" style="margin-top:14px"><button class="btn btn--p" id="n-go">Create and invite client →</button></div></section>');
+    d.querySelector('#n-go').addEventListener('click',async function(){
+      var co=$('#n-co').value.trim(),em=$('#n-em').value.trim().toLowerCase();
+      if(!co||!/^\S+@\S+\.\S+$/.test(em)){toast('Add a company and a valid client email.');return}
+      this.disabled=true;
+      try{await q(sb.from('engagements').insert({company:co,client_email:em,kind:$('#n-k').value,summary:$('#n-su').value||null}));
+        var link=await inviteLink(em,'client',{full_name:$('#n-nm').value||null,company:co});aEngagements();showLink(link,em,($('#n-nm').value||'').split(' ')[0]);
+      }catch(e){fail(e);this.disabled=false}
+    });
+  });
+}
+
+async function engDrawer(id){
+  var e=await q(sb.from('engagements').select('*').eq('id',id).single());
+  var r=await q(sb.from('results').select('*').eq('engagement_id',id).maybeSingle())||{published:false,buyers:[],currency:'USD'};
+  var buyers=Array.isArray(r.buyers)?r.buyers.slice():[];
+  var d=openDrawer(engKind(e.kind),e.company,
+    '<section class="card"><h2>Engagement</h2><div class="grid2"><label class="fld"><span>Status</span><select class="in" id="e-st">'+opts(ENG_STATUS,e.status)+'</select></label>'+
+    '<label class="fld"><span>Type</span><select class="in" id="e-k">'+opts(ENG_KINDS,e.kind)+'</select></label>'+
+    '<label class="fld span2"><span>Summary (client sees this)</span><textarea class="in" id="e-su">'+esc(e.summary||'')+'</textarea></label></div>'+
+    '<p class="small muted" style="margin-top:10px">Client: '+esc(e.client_email)+'</p>'+
+    '<div class="row" style="margin-top:14px"><button class="btn btn--n" id="e-save">Save</button><button class="btn" id="e-link">New sign-in link for client</button><button class="btn btn--g btn--d" id="e-del">Delete</button></div></section>'+
+    '<section class="card"><h2>Results for the client</h2><p class="muted small" style="margin-bottom:14px">Hidden from the client until you tick “Published”.</p>'+
+    '<div class="grid3"><label class="fld"><span>Value from</span><input class="in" type="number" min="0" step="any" id="r-lo" value="'+esc(r.value_low==null?'':r.value_low)+'" placeholder="e.g. 45000000"></label>'+
+    '<label class="fld"><span>Value to</span><input class="in" type="number" min="0" step="any" id="r-hi" value="'+esc(r.value_high==null?'':r.value_high)+'"></label>'+
+    '<label class="fld"><span>Currency</span><select class="in" id="r-cu">'+opts(['USD','SAR','AED','EUR','GBP'],r.currency)+'</select></label>'+
+    '<label class="fld" style="grid-column:1/-1"><span>Note on the value range</span><textarea class="in" id="r-nt" rows="2" placeholder="Basis, multiples used, caveats">'+esc(r.value_note||'')+'</textarea></label></div>'+
+    '<h3 style="margin:18px 0 8px">Buyer list</h3><div class="tbl-wrap"><table><thead><tr><th>Buyer</th><th>Country</th><th>Type</th><th>Why they fit</th><th></th></tr></thead><tbody id="b-rows"></tbody></table></div>'+
+    '<div class="row" style="margin-top:10px"><button class="btn btn--sm" id="b-add">+ Add buyer</button></div>'+
+    '<div class="row" style="margin-top:18px;justify-content:space-between"><label class="row" style="gap:8px;cursor:pointer"><input type="checkbox" id="r-pub"'+(r.published?' checked':'')+'> <b>Published to client</b></label><button class="btn btn--p" id="r-save">Save results</button></div></section>'+
+    filesBlock('e',id,{title:'Documents and deliverables',deliverable:true})+msgBlock('e',id));
+  function drawB(){d.querySelector('#b-rows').innerHTML=buyers.length?buyers.map(function(b,i){return '<tr><td><input class="in" data-b="'+i+'" data-f="name" value="'+esc(b.name||'')+'"></td><td><input class="in" data-b="'+i+'" data-f="country" value="'+esc(b.country||'')+'"></td><td><select class="in" data-b="'+i+'" data-f="type">'+opts(['Strategic','Financial','Family office','Sovereign'],b.type||'Strategic')+'</select></td><td><input class="in" data-b="'+i+'" data-f="rationale" value="'+esc(b.rationale||'')+'"></td><td><button class="btn btn--sm btn--g" data-bx="'+i+'" aria-label="Remove buyer">×</button></td></tr>'}).join(''):'<tr><td colspan="5" class="empty" style="padding:18px">No buyers yet.</td></tr>'}
+  drawB();
+  d.querySelector('#b-rows').addEventListener('input',function(ev){var t=ev.target;if(t.dataset.b!=null)buyers[+t.dataset.b][t.dataset.f]=t.value});
+  d.querySelector('#b-rows').addEventListener('click',function(ev){var x=ev.target.closest('[data-bx]');if(x){buyers.splice(+x.dataset.bx,1);drawB()}});
+  d.querySelector('#b-add').addEventListener('click',function(){buyers.push({name:'',country:'',type:'Strategic',rationale:''});drawB()});
+  d.querySelector('#e-save').addEventListener('click',async function(){try{await q(sb.from('engagements').update({status:$('#e-st').value,kind:$('#e-k').value,summary:$('#e-su').value||null}).eq('id',id));toast('Saved.');if(S.view==='engagements')aEngagements().then(function(){})}catch(err){fail(err)}});
+  d.querySelector('#r-save').addEventListener('click',async function(){
+    var lo=$('#r-lo').value,hi=$('#r-hi').value;
+    try{await q(sb.from('results').update({value_low:lo===''?null:+lo,value_high:hi===''?null:+hi,currency:$('#r-cu').value,value_note:$('#r-nt').value||null,buyers:buyers.filter(function(b){return (b.name||'').trim()}),published:$('#r-pub').checked}).eq('engagement_id',id));toast($('#r-pub').checked?'Saved and visible to the client.':'Saved as a draft.')}catch(err){fail(err)}
+  });
+  d.querySelector('#e-link').addEventListener('click',async function(){this.disabled=true;try{var link=await inviteLink(e.client_email,'client');showLink(link,e.client_email)}catch(err){fail(err);this.disabled=false}});
+  d.querySelector('#e-del').addEventListener('click',async function(){if(!confirm('Delete this engagement, its messages and file records? This can’t be undone.'))return;try{await q(sb.from('engagements').delete().eq('id',id));closeDrawer();aEngagements()}catch(err){fail(err)}});
+  mountFiles(d,'e',id,true);mountMsgs(d,'e',id);
+}
+
+async function aMandates(){
+  var rows=await q(sb.from('mandates').select('*').order('created_at',{ascending:false}));
+  var root=main(head('mandates','Partner mandates','Mandates submitted by partner firms: banks, advisors and sponsors.')+
+    '<div class="filters"><select class="in" id="ms" aria-label="Status"><option value="">All statuses</option>'+opts(MAN_STATUS)+'</select></div>'+
+    '<div class="tbl-wrap"><table><thead><tr><th>Company</th><th>Partner firm</th><th>Side</th><th>Sector · Country</th><th>Size</th><th>Status</th><th>Submitted</th></tr></thead><tbody id="mt"></tbody></table></div>');
+  function draw(){var s=$('#ms').value,f=rows.filter(function(m){return !s||m.status===s});
+    $('#mt').innerHTML=f.length?f.map(function(m){return '<tr class="click" data-man="'+m.id+'"><td><b>'+esc(m.company)+'</b></td><td class="small">'+esc(m.partner_firm||'')+'</td><td class="small">'+esc(label(m.side))+'</td><td class="small">'+esc([m.sector,m.country].filter(Boolean).join(' · '))+'</td><td class="small">'+esc(m.size_band||'')+'</td><td>'+pill(m.status)+'</td><td class="mono small">'+fmtDate(m.created_at)+'</td></tr>'}).join(''):'<tr><td colspan="7" class="empty">'+(rows.length?'No mandates with this status.':'No mandates yet. Invite partner firms from People, and their submissions land here.')+'</td></tr>'}
+  $('#ms').addEventListener('input',draw);draw();
+  root.addEventListener('click',function(e){var t=e.target.closest('[data-man]');if(t)mandateDrawer(t.dataset.man)});
+}
+
+async function mandateDrawer(id){
+  var m=await q(sb.from('mandates').select('*').eq('id',id).single());
+  var admin=S.me.role==='admin';
+  var info='<section class="card"><dl class="kv"><dt>Submitted</dt><dd>'+fmtTime(m.created_at)+'</dd>'+(m.partner_firm?'<dt>Partner firm</dt><dd>'+esc(m.partner_firm)+'</dd>':'')+
+    '<dt>Side</dt><dd>'+esc(label(m.side))+'</dd>'+(m.sector?'<dt>Sector</dt><dd>'+esc(m.sector)+'</dd>':'')+(m.country?'<dt>Country</dt><dd>'+esc(m.country)+'</dd>':'')+
+    (m.size_band?'<dt>Size</dt><dd>'+esc(m.size_band)+'</dd>':'')+(m.description?'<dt>Description</dt><dd>'+esc(m.description)+'</dd>':'')+'</dl></section>';
+  var ctl=admin?'<section class="card"><h2>Review</h2><div class="grid2"><label class="fld"><span>Status</span><select class="in" id="m-st">'+opts(MAN_STATUS,m.status)+'</select></label><div></div>'+
+    '<label class="fld span2"><span>Note to the partner (they see this)</span><textarea class="in" id="m-nt">'+esc(m.admin_note||'')+'</textarea></label></div>'+
+    '<div class="row" style="margin-top:14px"><button class="btn btn--n" id="m-save">Save</button></div></section>'
+    :(m.admin_note?'<section class="card"><h2>Note from DrawingBoard</h2><p style="white-space:pre-wrap">'+esc(m.admin_note)+'</p></section>':'');
+  var d=openDrawer(label(m.side)+'-side mandate',m.company,info+ctl+filesBlock('m',id)+msgBlock('m',id),'<div style="margin-top:8px">'+pill(m.status)+'</div>');
+  if(admin)d.querySelector('#m-save').addEventListener('click',async function(){try{await q(sb.from('mandates').update({status:$('#m-st').value,admin_note:$('#m-nt').value||null}).eq('id',id));toast('Saved.');refreshCounts();if(S.view==='mandates')aMandates()}catch(e){fail(e)}});
+  mountFiles(d,'m',id,false);mountMsgs(d,'m',id);
+}
+
+async function aPeople(){
+  var r=await Promise.all([sb.from('profiles').select('*').order('created_at',{ascending:false}),sb.from('invites').select('*').order('created_at',{ascending:false})]);
+  r.forEach(function(x){if(x.error)throw x.error});
+  var ppl=r[0].data,inv=r[1].data,emails={};ppl.forEach(function(p){emails[p.email]=1});
+  var pend=inv.filter(function(i){return !emails[i.email]});
+  var root=main(head('people','People','Who can sign in to the portal. Clients see only their own engagements; partners see only their own mandates.','<button class="btn btn--p" id="inv">Invite someone</button>')+
+    '<div class="tbl-wrap"><table><thead><tr><th>Person</th><th>Company</th><th>Joined</th><th>Access</th><th></th></tr></thead><tbody>'+
+    ppl.map(function(p){return '<tr><td>'+esc(p.full_name||'—')+'<span class="sub">'+esc(p.email)+'</span></td><td class="small">'+esc(p.company||'')+'</td><td class="mono small">'+fmtDate(p.created_at)+'</td><td>'+(p.id===S.me.id?pill(p.role):'<select class="in" style="width:auto" data-role="'+p.id+'" aria-label="Access for '+esc(p.email)+'">'+opts([['pending','Pending'],['client','Client'],['partner','Partner'],['admin','Admin']],p.role)+'</select>')+'</td><td>'+(p.id===S.me.id?'<span class="small muted">You</span>':'<button class="btn btn--sm btn--g" data-relink="'+esc(p.email)+'">Sign-in link</button>')+'</td></tr>'}).join('')+
+    pend.map(function(i){return '<tr><td>'+esc(i.full_name||'—')+'<span class="sub">'+esc(i.email)+'</span></td><td class="small">'+esc(i.company||'')+'</td><td class="small muted">Invited '+fmtDate(i.created_at)+'</td><td>'+pill(i.role)+'</td><td><button class="btn btn--sm btn--g" data-relink="'+esc(i.email)+'">Sign-in link</button></td></tr>'}).join('')+
+    '</tbody></table></div>'+
+    '<p class="small muted" style="margin-top:12px">Anyone who signs in without an invite appears as Pending and sees nothing until you give them access.</p>');
+  root.addEventListener('change',async function(e){var s=e.target.closest('[data-role]');if(!s)return;
+    if(s.value==='admin'&&!confirm('Give this person full admin access, including every lead and engagement?')){go('people');return}
+    try{await q(sb.rpc('admin_set_role',{uid:s.dataset.role,r:s.value}));toast('Access updated.');refreshCounts()}catch(err){fail(err)}});
+  root.addEventListener('click',async function(e){var b=e.target.closest('[data-relink]');if(!b)return;b.disabled=true;try{showLink(await inviteLink(b.dataset.relink),b.dataset.relink)}catch(err){fail(err)}b.disabled=false});
+  $('#inv').addEventListener('click',function(){
+    var d=openDrawer('invite','Give someone portal access',
+      '<section class="card"><div class="grid2"><label class="fld"><span>Email *</span><input class="in" type="email" id="i-em"></label>'+
+      '<label class="fld"><span>Access</span><select class="in" id="i-r">'+opts([['partner','Partner firm: submits mandates'],['client','Client: sees their engagements'],['admin','Admin: full access']],'partner')+'</select></label>'+
+      '<label class="fld"><span>Name</span><input class="in" id="i-nm"></label><label class="fld"><span>Company or firm</span><input class="in" id="i-co"></label></div>'+
+      '<div class="row" style="margin-top:14px"><button class="btn btn--p" id="i-go">Grant access and get link →</button></div></section>');
+    d.querySelector('#i-go').addEventListener('click',async function(){
+      var em=$('#i-em').value.trim().toLowerCase(),role=$('#i-r').value;
+      if(!/^\S+@\S+\.\S+$/.test(em)){toast('Enter a valid email.');return}
+      if(role==='admin'&&!confirm('Give '+em+' full admin access?'))return;
+      this.disabled=true;
+      try{var link=await inviteLink(em,role,{full_name:$('#i-nm').value||null,company:$('#i-co').value||null});aPeople();showLink(link,em,($('#i-nm').value||'').split(' ')[0])}catch(err){fail(err);this.disabled=false}
+    });
+  });
+}
+
+/* ---------- client ---------- */
+var STEP_LABELS={onboarding:'Onboarding',in_progress:'In progress',delivered:'Delivered',closed:'Closed'};
+function steps(cur){var i=ENG_STATUS.indexOf(cur);return '<div class="steps">'+ENG_STATUS.map(function(s,k){return '<div class="'+(k<i?'done':k===i?'on':'')+'">'+(k<i?'✓ ':'')+STEP_LABELS[s]+'</div>'}).join('')+'</div>'}
+async function cEngagements(){
+  var rows=await q(sb.from('engagements').select('*').order('created_at',{ascending:false}));
+  if(rows.length===1)return cEngagement(rows[0],true);
+  var root=main(head('your engagements','Welcome'+(S.me.full_name?', '+S.me.full_name.split(' ')[0]:''),'Your work with DrawingBoard Capital. Open an engagement to share documents, read results and message the team.')+
+    (rows.length?'<div class="grid2">'+rows.map(function(e){return '<button class="card" style="text-align:left;cursor:pointer;margin:0" data-ce="'+e.id+'"><p class="lbl">'+esc(engKind(e.kind))+'</p><h2 style="margin:6px 0 10px">'+esc(e.company)+'</h2>'+pill(e.status)+'<p class="small muted" style="margin-top:10px">Started '+fmtDate(e.created_at)+'</p></button>'}).join('')+'</div>'
+    :'<div class="card"><h2>Nothing here yet</h2><p class="muted">Your engagement will appear here as soon as the team sets it up. Questions? Email <a href="mailto:albin@drawingboard.capital">albin@drawingboard.capital</a>.</p></div>'));
+  root.addEventListener('click',function(e){var t=e.target.closest('[data-ce]');if(t){var en=rows.filter(function(x){return x.id===t.dataset.ce})[0];cEngagement(en,false)}});
+}
+async function cEngagement(e,only){
+  var r=await q(sb.from('results').select('*').eq('engagement_id',e.id).maybeSingle());
+  var res='';
+  if(r&&r.published){
+    if(r.value_low!=null||r.value_high!=null)res+='<section class="card"><p class="lbl">indicative value range</p><div class="range" style="margin:10px 0"><b>'+esc(money(r.value_low,r.currency))+(r.value_high!=null?' – '+esc(money(r.value_high,r.currency).replace(/^\w+ /,'')):'')+'</b></div>'+(r.value_note?'<p class="muted" style="white-space:pre-wrap">'+esc(r.value_note)+'</p>':'')+'<p class="small muted" style="margin-top:10px">A starting point based on comparable transactions, not a formal valuation.</p></section>';
+    if(r.buyers&&r.buyers.length)res+='<section class="card"><p class="lbl">buyer list</p><h2 style="margin:6px 0 14px">'+r.buyers.length+' potential buyers</h2><div class="tbl-wrap"><table><thead><tr><th>Buyer</th><th>Country</th><th>Type</th><th>Why they fit</th></tr></thead><tbody>'+r.buyers.map(function(b){return '<tr><td><b>'+esc(b.name)+'</b></td><td class="small">'+esc(b.country||'')+'</td><td class="small">'+esc(b.type||'')+'</td><td class="small">'+esc(b.rationale||'')+'</td></tr>'}).join('')+'</tbody></table></div><p class="small muted" style="margin-top:10px">Confidential. Please don’t contact these parties directly; we manage every approach.</p></section>';
+  }
+  var root=main((only?'':'<button class="btn btn--g" data-go="engagements" style="margin-bottom:12px;padding-left:0">← All engagements</button>')+
+    head(engKind(e.kind),e.company,e.summary||'')+steps(e.status)+'<div style="height:16px"></div>'+
+    (res||'<section class="card"><h2>Results</h2><p class="muted">Your results will appear here when the team publishes them. In the meantime, upload any documents below and message us with questions.</p></section>')+
+    '<div class="grid2" style="align-items:start;margin-top:16px">'+filesBlock('e',e.id,{title:'Your documents'})+'<div style="margin-top:0">'+msgBlock('e',e.id)+'</div></div>');
+  root.querySelector('.grid2 .card').style.marginTop='0';
+  mountFiles(root,'e',e.id,false);mountMsgs(root,'e',e.id);
+}
+
+/* ---------- partner ---------- */
+async function pMandates(){
+  var rows=await q(sb.from('mandates').select('*').order('created_at',{ascending:false}));
+  var root=main(head('partner portal','Your mandates','Mandates you have shared with DrawingBoard Capital, and where each one stands.','<button class="btn btn--p" data-go="new-mandate">Submit a mandate</button>')+
+    '<div class="tbl-wrap"><table><thead><tr><th>Company</th><th>Side</th><th>Sector · Country</th><th>Size</th><th>Status</th><th>Submitted</th></tr></thead><tbody>'+
+    (rows.length?rows.map(function(m){return '<tr class="click" data-man="'+m.id+'"><td><b>'+esc(m.company)+'</b></td><td class="small">'+esc(label(m.side))+'</td><td class="small">'+esc([m.sector,m.country].filter(Boolean).join(' · '))+'</td><td class="small">'+esc(m.size_band||'')+'</td><td>'+pill(m.status)+'</td><td class="mono small">'+fmtDate(m.created_at)+'</td></tr>'}).join(''):'<tr><td colspan="6" class="empty">No mandates yet. <a href="#" data-go="new-mandate">Submit your first one</a>.</td></tr>')+
+    '</tbody></table></div>');
+  root.addEventListener('click',function(e){var t=e.target.closest('[data-man]');if(t)mandateDrawer(t.dataset.man)});
+}
+function pNewMandate(){
+  var root=main(head('submit a mandate','Share a mandate','Tell us about the company. We review every submission and reply within two business days. Keep it anonymous if you prefer; you can share documents after we accept.')+
+    '<form class="card" id="nm" novalidate style="max-width:820px"><div class="grid2">'+
+    '<label class="fld"><span>Company or project name *</span><input class="in" name="company" required placeholder="e.g. Project Falcon"></label>'+
+    '<label class="fld"><span>Your firm</span><input class="in" name="partner_firm" value="'+esc(S.me.company||'')+'"></label>'+
+    '<label class="fld"><span>Mandate</span><select class="in" name="side">'+opts([['sell','Sell-side: sale of a company'],['buy','Buy-side: acquisition'],['capital','Capital raise']])+'</select></label>'+
+    '<label class="fld"><span>Size (revenue or value)</span><select class="in" name="size_band">'+opts(['Under $20M','$20–50M','$50–100M','$100–200M','Over $200M'],'$20–50M')+'</select></label>'+
+    '<label class="fld"><span>Sector</span><select class="in" name="sector">'+opts(['Industrials','Mining and metals','Chemicals','Energy and environment','Logistics','Healthcare','Technology','Food and beverage','Consumer and retail','Construction','Automotive','Education','Financial services','Business services','Other'])+'</select></label>'+
+    '<label class="fld"><span>Country</span><select class="in" name="country">'+opts(['Saudi Arabia','United Arab Emirates','Qatar','Kuwait','Bahrain','Oman','Other'])+'</select></label>'+
+    '<label class="fld span2"><span>Description</span><textarea class="in" name="description" rows="5" placeholder="What the company does, ownership, what the client wants, timing"></textarea></label></div>'+
+    '<p class="err" id="nm-err" hidden style="margin-top:12px"></p><div class="row" style="margin-top:16px"><button class="btn btn--p" type="submit">Submit mandate →</button></div></form>');
+  $('#nm').addEventListener('submit',async function(e){
+    e.preventDefault();var f=this,er=$('#nm-err');
+    if(!f.company.value.trim()){er.textContent='Add a company or project name.';er.hidden=false;return}
+    var b=f.querySelector('button');b.disabled=true;
+    try{var row={company:f.company.value.trim(),partner_firm:f.partner_firm.value.trim()||null,side:f.side.value,size_band:f.size_band.value,sector:f.sector.value,country:f.country.value,description:f.description.value.trim()||null};
+      var m=await q(sb.from('mandates').insert(row).select('id').single());toast('Mandate submitted.');go('mandates');setTimeout(function(){mandateDrawer(m.id)},300);
+    }catch(err){fail(err);b.disabled=false}
+  });
+}
+
+/* ---------- pending & account ---------- */
+function viewPending(){
+  main('<div class="card" style="max-width:640px;margin:40px auto"><p class="lbl">access pending</p><h1 style="margin:8px 0 12px">You’re signed in</h1>'+
+    '<p class="muted">Your account ('+esc(S.me.email)+') doesn’t have portal access yet. A partner at DrawingBoard Capital will set it up after reviewing your request.</p>'+
+    '<p class="muted" style="margin-top:12px">If you’re expecting access, email <a href="mailto:albin@drawingboard.capital">albin@drawingboard.capital</a>.</p>'+
+    '<div class="row" style="margin-top:20px"><a class="btn" href="/">Back to the website</a><button class="btn btn--g" id="recheck">Check again</button></div></div>');
+  $('#recheck').addEventListener('click',async function(){await loadMe();go(defaultView())});
+}
+function viewAccount(){
+  var root=main(head('account','Your account','')+'<div class="grid2" style="align-items:start">'+
+    '<form class="card" id="acc" style="margin:0"><h2>Details</h2><div style="display:flex;flex-direction:column;gap:14px"><label class="fld"><span>Email</span><input class="in" value="'+esc(S.me.email)+'" disabled></label>'+
+    '<label class="fld"><span>Full name</span><input class="in" name="full_name" value="'+esc(S.me.full_name||'')+'"></label>'+
+    '<label class="fld"><span>Company</span><input class="in" name="company" value="'+esc(S.me.company||'')+'"></label></div>'+
+    '<div class="row" style="margin-top:16px"><button class="btn btn--n" type="submit">Save</button></div></form>'+
+    '<form class="card" id="pw" style="margin:0"><h2>Password</h2><p class="muted small" style="margin-bottom:14px">Optional. Lets you sign in without waiting for an email link.</p>'+
+    '<label class="fld"><span>New password (10+ characters)</span><input class="in" type="password" name="pw" autocomplete="new-password" minlength="10"></label>'+
+    '<div class="row" style="margin-top:16px"><button class="btn btn--n" type="submit">Set password</button></div></form></div>');
+  $('#acc').addEventListener('submit',async function(e){e.preventDefault();try{await q(sb.from('profiles').update({full_name:this.full_name.value.trim()||null,company:this.company.value.trim()||null}).eq('id',S.me.id));await loadMe();renderShell();toast('Saved.')}catch(err){fail(err)}});
+  $('#pw').addEventListener('submit',async function(e){e.preventDefault();var p=this.pw.value;if(p.length<10){toast('Use at least 10 characters.');return}var r=await sb.auth.updateUser({password:p});if(r.error)fail(r.error);else{this.reset();toast('Password set.')}});
+}
+
+function defaultView(){
+  var h=(location.hash||'').replace('#','');var r=S.me.role,t=(TABS[r]||[]).map(function(x){return x[0]});
+  if(h==='account')return 'account';
+  if(t.indexOf(h)>=0)return h;
+  return t[0]||'pending';
+}
+
+/* ---------- boot ---------- */
+var booted=false;
+async function boot(session){
+  S.session=session;
+  if(!session){booted=false;renderAuth();return}
+  if(booted)return;booted=true;
+  try{await loadMe()}catch(e){fail(e);renderAuth();booted=false;return}
+  if(/access_token=/.test(location.hash))history.replaceState(null,'',location.pathname);
+  go(defaultView());
+  refreshCounts().catch(function(){});
+}
+sb.auth.onAuthStateChange(function(ev,session){
+  if(ev==='SIGNED_OUT'){S.session=null;booted=false;renderAuth();return}
+  if(ev==='INITIAL_SESSION'||ev==='SIGNED_IN')setTimeout(function(){boot(session)},0);
+  if(ev==='TOKEN_REFRESHED')S.session=session;
+});
+})();
+</script>
+</body>
+</html>
